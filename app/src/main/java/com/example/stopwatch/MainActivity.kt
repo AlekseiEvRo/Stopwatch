@@ -1,58 +1,56 @@
 package com.example.stopwatch
 
 import android.os.Bundle
-import com.google.android.material.snackbar.Snackbar
+import android.os.PersistableBundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.navigation.findNavController
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.navigateUp
-import androidx.navigation.ui.setupActionBarWithNavController
-import android.view.Menu
-import android.view.MenuItem
-import com.example.stopwatch.databinding.ActivityMainBinding
+import android.os.SystemClock
+import android.widget.Button
+import android.widget.Chronometer
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var appBarConfiguration: AppBarConfiguration
-    private lateinit var binding: ActivityMainBinding
+    lateinit var stopwatch: Chronometer
+    var running = false
+    var offset: Long = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
 
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        stopwatch = findViewById<Chronometer>(R.id.stopwatch)
 
-        setSupportActionBar(binding.toolbar)
-
-        val navController = findNavController(R.id.nav_host_fragment_content_main)
-        appBarConfiguration = AppBarConfiguration(navController.graph)
-        setupActionBarWithNavController(navController, appBarConfiguration)
-
-        binding.fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show()
+        val startButton = findViewById<Button>(R.id.start_button)
+        startButton.setOnClickListener{
+            if (!running){
+                setBaseTime()
+                stopwatch.start()
+                running = true
+            }
         }
-    }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        menuInflater.inflate(R.menu.menu_main, menu)
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        return when (item.itemId) {
-            R.id.action_settings -> true
-            else -> super.onOptionsItemSelected(item)
+        val pauseButton = findViewById<Button>(R.id.pause_button)
+        pauseButton.setOnClickListener {
+            if (running){
+                saveOffset()
+                stopwatch.stop()
+                running = false
+            }
         }
+
+        val resetButton = findViewById<Button>(R.id.reset_button)
+        resetButton.setOnClickListener{
+            offset = 0
+            setBaseTime()
+        }
+
     }
 
-    override fun onSupportNavigateUp(): Boolean {
-        val navController = findNavController(R.id.nav_host_fragment_content_main)
-        return navController.navigateUp(appBarConfiguration)
-                || super.onSupportNavigateUp()
+    fun setBaseTime(){
+        stopwatch.base = SystemClock.elapsedRealtime() - offset
     }
+
+    fun saveOffset(){
+        offset = SystemClock.elapsedRealtime() - stopwatch.base
+    }
+
 }
