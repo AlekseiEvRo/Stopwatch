@@ -28,7 +28,7 @@ class MainActivity : AppCompatActivity() {
             running = savedInstanceState.getBoolean(RUNNING_KEY)
 
             if (running){
-                stopwatch.base = savedInstanceState.GetLong(BASE_KEY)
+                stopwatch.base = savedInstanceState.getLong(BASE_KEY)
                 stopwatch.start()
             }
             else setBaseTime()
@@ -76,11 +76,11 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    override fun onSavedInstanceState(savedInstanceState: Bundle){
+    override fun onSaveInstanceState(savedInstanceState: Bundle){
         savedInstanceState.putLong(OFFSET_KEY, offset)
         savedInstanceState.putBoolean(RUNNING_KEY, running)
-        savedInstanceState.outLong(BASE_KEY, stopwatch.base)
-        super.onSavedInstanceState(savedInstanceState)
+        savedInstanceState.putLong(BASE_KEY, stopwatch.base)
+        super.onSaveInstanceState(savedInstanceState)
     }
     
     fun setBaseTime(){
